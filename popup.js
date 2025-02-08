@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeTab = tabs[0];
 
         if (!activeTab.url || activeTab.url.startsWith('chrome://') || activeTab.url.startsWith('https://chrome.google.com')) {
-            console.warn("Content script not allowed on this page:", activeTab.url);
+            //console.warn("Content script not allowed on this page:", activeTab.url);
             return;
         }
 
