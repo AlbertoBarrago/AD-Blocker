@@ -8,8 +8,17 @@ const styleBannerRules = `
   .header-banner,
   .promotional-banner,
   .floating-banner,
+  .adk_interstitial-creativeless,
   aside[class*="banner"],
-  section[class*="banner"] {
+  section[class*="banner"],
+  __lxG__multi __lxG__multi_lx_728768 __lxG__bsticky __lxG__bsticky_lx_728768,
+  .adv,
+  .adv-box,
+  .adv-banner,
+  .adv-skyscraper,
+  .adv-leaderboard,
+  .adv-rectangle,
+  .adv-footer {
     display: none !important;
     opacity: 0 !important;
     visibility: hidden !important;
@@ -34,7 +43,7 @@ document.documentElement.appendChild(styleSheet);
 let blockedAds = [];
 
 function removeAds() {
-    const adElements = document.querySelectorAll(`
+    const adSelectors = `
         [id*="google_ads"],
         [id*="banner"],
         [class*="ads"],
@@ -43,32 +52,48 @@ function removeAds() {
         iframe[id*="google_ads_iframe"],
         [class*="ad-container"],
         [class*="sponsored"],
+        [class*="adk_interstitial"],
         [id*="carbonads"],
-        [class*="adsbox"]
-    `);
+        [id*="__lxG__bsticky_lx_728768"],
+        [class*="adsbox"],
+        [class*="adsbygoogle"],
+        [class*="ad-slot"],
+        [class*="ad-wrapper"],
+        [data-ad-client],
+        [id*="div-gpt-ad"],
+        [class*=.adv],
+        iframe[src*="doubleclick.net"],
+        iframe[src*="ad."],
+        div[aria-label*="advertisement"]
+    `;
+
+    const adElements = document.querySelectorAll(adSelectors);
+
     adElements.forEach(ad => {
-        if (ad.id || ad.className) {
-            blockedAds.push(ad.id || ad.className);
+        if (ad && (ad.id || ad.className)) {
+            const identifier = ad.id || ad.className;
+            if (!blockedAds.includes(identifier)) {
+                blockedAds.push(identifier);
+            }
             ad.remove();
         }
     });
 }
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "getBlockedAds") {
-        sendResponse({blockedAds: [...new Set(blockedAds)]});
+        sendResponse({ blockedAds: [...new Set(blockedAds)] });
     }
     return true;
 });
 
 if (document.body) {
     const observer = new MutationObserver(removeAds);
-    observer.observe(document.body, {childList: true, subtree: true});
+    observer.observe(document.body, { childList: true, subtree: true });
     removeAds();
 } else {
     document.addEventListener('DOMContentLoaded', () => {
         const observer = new MutationObserver(removeAds);
-        observer.observe(document.body, {childList: true, subtree: true});
+        observer.observe(document.body, { childList: true, subtree: true });
         removeAds();
     });
 }
