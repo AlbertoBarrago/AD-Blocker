@@ -1,0 +1,15 @@
+{
+  "id": 1,
+  "priority": 1,
+  "action": {
+    "type": "block"
+  },
+  "condition": {
+    "urlFilter": "*google_ads_iframe_*",
+    "resourceTypes": [
+      "sub_frame",
+      "image",
+      "script"
+    ]
+  }
+}

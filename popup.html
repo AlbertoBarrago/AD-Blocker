@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            width: 350px;
+            padding: 15px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+        }
+
+        .header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            margin: -15px -15px 15px -15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header h3 {
+            margin: 0;
+        }
+
+        .stats {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #blocked-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .blocked-item {
+            margin: 8px 0;
+            padding: 10px;
+            background: #f1f3f4;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .blocked-item:hover {
+            background: #e8eaed;
+        }
+
+        .counter {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img src="icons/icon48.png" width="24" height="24">
+    <h3>Ad Blocker Stats</h3>
+</div>
+<div class="stats">
+    <span id="total-count" class="counter">0</span> ads blocked on this page
+</div>
+<div id="blocked-list"></div>
+<script src="popup.js"></script>
+</body>
+</html>
