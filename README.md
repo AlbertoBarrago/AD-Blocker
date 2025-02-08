@@ -16,5 +16,3 @@ Albz Ad Blocker is a Chrome extension that blocks ads on websites.
 ### TODO
 - [ ] Add more options for blocking ads
 - [ ] Add a way to block ads on specific websites
-- [ ] Add a way to block ads on specific domains
-- [ ] Add a way to block ads on specific URLs
