@@ -9,10 +9,22 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                     type: 'block'
                 },
                 condition: {
-                    urlFilter: '*://*.doubleclick.net/*|*://*.googlesyndication.com/*|*://googleads.*/*',
+                    urlFilter: '*://*.doubleclick.net/*|*://*.googlesyndication.com/*|*://googleads.*/*|*://*.adnxs.com/*|*://*.amazon-adsystem.com/*|*://*.outbrain.com/*|*://*.taboola.com/*|*://*.criteo.com/*|*://*.adform.net/*|*://*.rubiconproject.com/*|*://*.pubmatic.com/*|*://*.openx.net/*|*://*.smartadserver.com/*|*://*.advertising.com/*|*://*.moatads.com/*|*://*.adsrvr.org/*|*://*.adroll.com/*|*://*.quantserve.com/*',
                     resourceTypes: ['script', 'image', 'xmlhttprequest']
                 }
             }]
-        })
+        });
+    }
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "updateBadge") {
+        chrome.action.setBadgeText({
+            text: message.count.toString(),
+            tabId: sender.tab.id
+        });
+        chrome.action.setBadgeBackgroundColor({
+            color: '#3bbf2b',
+        });
     }
 });

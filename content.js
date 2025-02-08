@@ -11,24 +11,7 @@ const styleBannerRules = `
   .adk_interstitial-creativeless,
   aside[class*="banner"],
   section[class*="banner"],
-  __lxG__multi __lxG__multi_lx_728768 __lxG__bsticky __lxG__bsticky_lx_728768,
-  .adv,
-  .adv-box,
-  .adv-banner,
-  .adv-skyscraper,
-  .adv-leaderboard,
-  .adv-rectangle,
-  .adv-footer {
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-    height: 0 !important;
-    width: 0 !important;
-    position: absolute !important;
-    z-index: -9999 !important;
-  }
-
+  div[class*="adv"],
   div[class*="sticky"][class*="ad"],
   div[style*="position: fixed"],
   div[style*="position:fixed"] {
@@ -41,6 +24,13 @@ styleSheet.textContent = styleBannerRules;
 document.documentElement.appendChild(styleSheet);
 
 let blockedAds = [];
+
+function updateBadgeCount(count) {
+    chrome.runtime.sendMessage({
+        action: "updateBadge",
+        count: count
+    });
+}
 
 function removeAds() {
     const adSelectors = `
@@ -74,26 +64,22 @@ function removeAds() {
             const identifier = ad.id || ad.className;
             if (!blockedAds.includes(identifier)) {
                 blockedAds.push(identifier);
+                updateBadgeCount(blockedAds.length);
             }
             ad.remove();
         }
     });
 }
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "getBlockedAds") {
-        sendResponse({ blockedAds: [...new Set(blockedAds)] });
+        sendResponse({blockedAds: [...new Set(blockedAds)]});
     }
     return true;
 });
 
-if (document.body) {
+document.addEventListener('DOMContentLoaded', () => {
     const observer = new MutationObserver(removeAds);
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, {childList: true, subtree: true});
     removeAds();
-} else {
-    document.addEventListener('DOMContentLoaded', () => {
-        const observer = new MutationObserver(removeAds);
-        observer.observe(document.body, { childList: true, subtree: true });
-        removeAds();
-    });
-}
+});
