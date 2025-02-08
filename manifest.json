@@ -15,7 +15,8 @@
   },
   "permissions": [
     "declarativeNetRequest",
-    "tabs"
+    "tabs",
+    "activeTab"
   ],
   "host_permissions": [
     "*://*/*"
