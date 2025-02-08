@@ -30,6 +30,29 @@
             border-radius: 8px;
             margin-bottom: 15px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-image: url('icons/shield.png');
+        }
+
+        .notification-icon.active {
+            background-image: url('icons/lightning.png');
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         #blocked-list {
@@ -73,6 +96,7 @@
     <h3>Ad Blocker Stats</h3>
 </div>
 <div class="stats">
+    <div class="notification-icon"></div>
     <span id="total-count" class="counter">0</span> ads blocked on this page
 </div>
 <div id="blocked-list"></div>

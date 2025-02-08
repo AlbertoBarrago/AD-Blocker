@@ -61,7 +61,7 @@ function removeAds() {
         [class*="ad-wrapper"],
         [data-ad-client],
         [id*="div-gpt-ad"],
-        [class*=.adv],
+        [class*=adv],
         iframe[src*="doubleclick.net"],
         iframe[src*="ad."],
         div[aria-label*="advertisement"]
