@@ -3,7 +3,7 @@
 ### Description
 Albz Ad Blocker is a Chrome extension that blocks ads on websites.
 ### Installation
-1. Clone the repository: `git clone https://github.com/albz/albz-ad-blocker.git`
+1. Clone the repository: `git clone https://codeberg.org/alBz/albz-ad-blocker`
 2. Go to the Chrome Extensions page: `chrome://extensions/`
 3. Upload the folder as an unpacked extension
 4. Have fun!
