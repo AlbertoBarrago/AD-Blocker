@@ -37,3 +37,7 @@ Albz Ad Blocker is a lightweight Chrome extension designed to enhance your brows
 ## License
 
 This project is licensed under the MIT License—see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+☕️ [buymeacoffee](https://buymeacoffee.com/albz)
