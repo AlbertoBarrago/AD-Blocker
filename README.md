@@ -34,16 +34,6 @@ Albz Ad Blocker is a lightweight Chrome extension designed to enhance your brows
 3. Use the settings menu to customize blocking preferences
 4. Add sites to whitelist if needed
 
-## Support
-
-- Report issues on our [Issue Tracker](https://github.io/alBz/albz-ad-blocker/issues)
-- Join our community discussions
-- Check our [Wiki](https://github.io/alBz/albz-ad-blocker/wiki) for guides and FAQs
-
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
 ## License
 
 This project is licensed under the MIT License—see the [LICENSE](LICENSE) file for details.
