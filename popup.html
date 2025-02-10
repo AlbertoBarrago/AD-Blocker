@@ -9,7 +9,6 @@
             background: #f8f9fa;
             margin: 0;
         }
-
         header {
             display: flex;
             justify-content: space-between;
@@ -19,36 +18,28 @@
             padding: 10px 15px;
             margin-bottom: 15px;
         }
-
         .header-right {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         .header-right h3 {
             margin: 0;
             font-size: 16px;
         }
-
         .header-left {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         .toggle-switch {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
-        /* Nasconde il checkbox */
         .toggle-switch input[type="checkbox"] {
             display: none;
         }
-
-        /* Stile per l'interruttore */
         .switch-label {
             position: relative;
             display: inline-block;
@@ -59,7 +50,6 @@
             cursor: pointer;
             transition: background 0.3s ease;
         }
-
         .switch-label::after {
             content: "";
             position: absolute;
@@ -71,19 +61,15 @@
             border-radius: 50%;
             transition: transform 0.3s ease;
         }
-
         .toggle-switch input[type="checkbox"]:checked + .switch-label {
             background: #7bec7f;
         }
-
         .toggle-switch input[type="checkbox"]:checked + .switch-label::after {
             transform: translateX(20px);
         }
-
         .toggle-text {
             font-size: 14px;
         }
-
         .stats {
             background: white;
             padding: 10px;
@@ -94,7 +80,6 @@
             align-items: center;
             gap: 10px;
         }
-
         .notification-icon {
             width: 24px;
             height: 24px;
@@ -104,12 +89,10 @@
             background-image: url('icons/shield.png');
             transition: filter 0.3s ease;
         }
-
         .notification-icon.active {
             background-image: url('icons/shield_active.png');
             animation: pulse 1.5s infinite;
         }
-
         @keyframes pulse {
             0% {
                 transform: scale(1);
@@ -121,7 +104,6 @@
                 transform: scale(1);
             }
         }
-
         .counter {
             background: #4CAF50;
             color: white;
@@ -131,22 +113,38 @@
             font-weight: bold;
         }
 
+        /* Hide the blocked list for now */
         #blocked-list {
             display: none;
-            max-height: 300px;
-            overflow-y: auto;
-            background: white;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        /* New actions section with adjusted button sizes */
+        .actions {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin: 15px 10px;
+        }
+
+        .actions button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            flex: 1;
+        }
+
+        .actions button:hover {
+            background-color: #45a049;
+        }
         .no-ads-message {
             text-align: center;
             color: #777;
             font-style: italic;
         }
-
         footer {
             text-align: center;
             margin-top: 10px;
@@ -161,7 +159,6 @@
         <img src="icons/icon48.png" width="24" height="24" alt="icon">
         <h3>Ad Blocker Stats</h3>
     </div>
-
     <div class="header-left">
         <div class="toggle-switch">
             <span class="toggle-text">Disable</span>
@@ -170,14 +167,16 @@
         </div>
     </div>
 </header>
-
 <div class="stats" id="stats-container">
     <div class="notification-icon active" id="plugin-icon"></div>
     <span id="total-count" class="counter">0</span> ads blocked on this page
 </div>
-
+<!-- New Actions Section -->
+<div class="actions">
+    <!-- <button type="button" id="whitelist-toggle">Add Current Site to Whitelist</button> -->
+    <button type="button" id="view-ads">View Blocked Ads</button>
+</div>
 <div id="blocked-list"></div>
-
 <footer>
     <small>Made with love by <a target="_blank" href="https://albertobarrago.github.io/">alBz</a></small>
 </footer>

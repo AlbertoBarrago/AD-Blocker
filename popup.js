@@ -1,85 +1,95 @@
-/**
- * Initializes the popup functionality when the DOM content is loaded.
- * Sets up event listeners and manage the ad blocker's state.
- *
- */
 document.addEventListener('DOMContentLoaded', () => {
-    const blockedList = document.getElementById('blocked-list');
-    const totalCount = document.getElementById('total-count');
     const disableSwitch = document.getElementById('disable-plugin');
     const pluginIcon = document.getElementById('plugin-icon');
     const statsContainer = document.getElementById('stats-container');
+    const addWhitelistBtn = document.getElementById('whitelist-toggle');
+    const viewAdsBtn = document.getElementById('view-ads');
 
-    chrome.storage.sync.get({pluginDisabled: false}, (data) => {
-        // Update the switch UI using the stored value
-        disableSwitch.checked = data.pluginDisabled;
+    // Initialize the popup UI
+    function initPopup() {
+        chrome.storage.sync.get({pluginDisabled: false}, (data) => {
+            disableSwitch.checked = data.pluginDisabled;
 
-        // Reflect the state on the icon and blocked list
-        if (data.pluginDisabled) {
-            pluginIcon.classList.remove('active');
-            blockedList.style.display = "none";
-            statsContainer.style.display = "none";
-            showMessage('Ad Blocker is disabled.');
-        } else {
-            pluginIcon.classList.add('active');
-            // Fetch and display blocked ads from the content script
-            chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-                if (tabs.length === 0) return;
-                const activeTab = tabs[0];
-                if (!activeTab.url || activeTab.url.startsWith('chrome://') || activeTab.url.startsWith('https://chrome.google.com')) {
-                    // Content script isn't allowed on this page.
-                    return;
-                }
-                try {
-                    chrome.tabs.sendMessage(activeTab.id, {action: "getBlockedAds"}, (response) => {
-                        if (chrome.runtime.lastError) {
-                            // Content script not available
-                            return;
-                        }
-                        if (response && response.blockedAds && response.blockedAds.length > 0) {
-                            blockedList.style.display = "block";
-                            blockedList.innerHTML = "";
-                            totalCount.textContent = response.blockedAds.length;
-                            response.blockedAds.forEach(ad => {
-                                const div = document.createElement('div');
-                                div.className = 'blocked-item';
-                                div.textContent = ad;
-                                blockedList.appendChild(div);
-                            });
-                        } else {
-                            blockedList.style.display = "none";
-                            showMessage('No ads blocked yet.');
-                        }
-                    });
-                } catch (error) {
-                    console.error("Error sending message:", error);
-                }
-            });
-        }
-    });
+            if (data.pluginDisabled) {
+                pluginIcon.classList.remove('active');
+                statsContainer.style.display = "none";
+                showMessage('Ad Blocker is disabled.');
+            } else {
+                pluginIcon.classList.add('active');
+                statsContainer.style.display = "flex";
+                // We are now hiding the blocked list section by default.
+                // Instead, users can view it via the "view ads" button.
+            }
+        });
+    }
 
+    // Toggle plugin enable/disable without reloading the popup.
     disableSwitch.addEventListener('change', (event) => {
         const isDisabled = event.target.checked;
         chrome.storage.sync.set({pluginDisabled: isDisabled}, () => {
             if (isDisabled) {
                 pluginIcon.classList.remove('active');
-                blockedList.style.display = "none";
                 statsContainer.style.display = "none";
-                showMessage('Ad Blocker is disabled.');
+                showMessage('Ad Blocker is disabled, reload the page to apply.');
             } else {
                 statsContainer.style.display = "flex";
                 pluginIcon.classList.add('active');
-                location.reload();
             }
         });
     });
 
-    /**
-     * Displays a message in the popup UI.
-     * Removes any existing message before showing the new one.
-     *
-     * @param {string} message - The message to display
-     */
+    // Add the current site to the whitelist.
+    /*addWhitelistBtn.addEventListener('click', () => {
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+            if (!tabs.length) return;
+            try {
+                const url = new URL(tabs[0].url);
+                const hostname = url.hostname;
+                chrome.storage.sync.get({whitelist: []}, (data) => {
+                    const whitelist = data.whitelist;
+                    if (!whitelist.includes(hostname)) {
+                        whitelist.push(hostname);
+                        chrome.storage.sync.set({whitelist: whitelist}, () => {
+                            alert(`Added ${hostname} to your whitelist.`);
+                        });
+                    } else {
+                        alert(`${hostname} is already in your whitelist.`);
+                    }
+                });
+            } catch (error) {
+                console.error("Error retrieving current site:", error);
+            }
+        });
+    });*/
+
+    // View the list of blocked ads in an alert.
+    viewAdsBtn.addEventListener('click', () => {
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+            if (tabs.length === 0) return;
+            const activeTab = tabs[0];
+            if (!activeTab.url || activeTab.url.startsWith('chrome://') || activeTab.url.startsWith('https://chrome.google.com')) {
+                alert("Content script not available on this page.");
+                return;
+            }
+            try {
+                chrome.tabs.sendMessage(activeTab.id, {action: "getBlockedAds"}, (response) => {
+                    if (chrome.runtime.lastError) {
+                        alert("No blocked ads list available on this page.");
+                        return;
+                    }
+                    if (response && response.blockedAds && response.blockedAds.length > 0) {
+                        alert("Blocked Ads:\n" + response.blockedAds.join('\n'));
+                    } else {
+                        alert("No ads blocked yet.");
+                    }
+                });
+            } catch (error) {
+                console.error("Error sending message:", error);
+            }
+        });
+    });
+
+    // Utility function to show a message in the popup UI.
     function showMessage(message) {
         const existingMsg = document.querySelector('.no-ads-message');
         if (existingMsg) {
@@ -88,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'no-ads-message';
         msgDiv.textContent = message;
-
         const footer = document.querySelector('footer');
         if (footer) {
             footer.parentNode.insertBefore(msgDiv, footer);
@@ -96,4 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.appendChild(msgDiv);
         }
     }
+
+    // Initialize the popup when the DOM content is loaded.
+    initPopup();
 });

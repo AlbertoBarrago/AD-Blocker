@@ -1,10 +1,9 @@
 chrome.storage.sync.get({pluginDisabled: false}, (result) => {
     if (result.pluginDisabled) {
-        console.log('Ad Blocker is disabled. Exiting content script.');
+        // Disable ad blocking functionality if disabled
         return;
     }
 
-    // Proceed with ad blocking functionality if enabled
     (function () {
         const styleBannerRules = `
         .banner, .banner-ad, .sticky-banner, .top-banner, .header-banner,
