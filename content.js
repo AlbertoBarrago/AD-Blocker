@@ -1,6 +1,9 @@
+/**
+ * Immediately invoked function expression (IIFE) to handle ad blocking functionality.
+ * Sets up CSS rules, mutation observers, and message handling for blocking and tracking ads.
+ */
 (function () {
     const styleBannerRules = `
-        /* Nasconde banner, sticky ads e overlay */
         .banner, .banner-ad, .sticky-banner, .top-banner, .header-banner,
         .promotional-banner, .floating-banner, .adk_interstitial-creativeless,
         aside[class*="banner"], section[class*="banner"], div[class*="banner"],
@@ -21,12 +24,19 @@
 
     const blockedAds = new Set();
 
+    /**
+     * Updates the extension badge with the count of blocked ads
+     * @param {number} count - The number of blocked ads to display on the badge
+     */
     function updateBadgeCount(count) {
         if (chrome?.runtime?.sendMessage) {
             chrome.runtime.sendMessage({ action: "updateBadge", count });
         }
     }
 
+    /**
+     * Removes advertisement elements from the page and tracks them
+     */
     function removeAds() {
         const adSelectors = `
             [id*="google_ads"], [id*="banner"], [class*="ads"], [class*="advertisement"],
@@ -56,6 +66,7 @@
         });
     }
 
+    // Set up message listener for badge count requests
     chrome.runtime?.onMessage?.addListener((message, sender, sendResponse) => {
         if (message.action === "getBlockedAds") {
             sendResponse({ blockedAds: Array.from(blockedAds) });
@@ -63,6 +74,10 @@
         return true;
     });
 
+    /**
+     * Initializes the mutation observer to watch for new ad elements
+     * If document.body Body isn't ready, sets up an observer to wait for it
+     */
     function initObserver() {
         if (!document.body) {
             const observer = new MutationObserver(() => {
