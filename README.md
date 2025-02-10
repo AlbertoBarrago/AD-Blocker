@@ -14,12 +14,7 @@ Albz Ad Blocker is a lightweight Chrome extension designed to enhance your brows
 
 ## Installation
 
-1. **Install from Chrome Web Store:**
-   - Visit the [Albz Ad Blocker page](https://chrome.google.com/webstore/detail/albz-ad-blocker) on Chrome Web Store
-   - Click "Add to Chrome"
-   - Follow the prompts to complete installation
-
-2. **Manual Installation (Developer Mode):**
+1. **Manual Installation (Developer Mode):**
    
    git clone https://github.io/alBz/albz-ad-blocker
    
