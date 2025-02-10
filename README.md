@@ -1,18 +1,49 @@
-## albz-ad-blocker
+# Albz Ad Blocker
 
-### Description
-Albz Ad Blocker is a Chrome extension that blocks ads on websites.
+Albz Ad Blocker is a lightweight Chrome extension designed to enhance your browsing experience by blocking intrusive ads. Enjoy a cleaner, faster, and more secure web experience with just a click.
 
-### Installation
-1. Clone the repository: `git clone https://codeberg.org/alBz/albz-ad-blocker`
-2. Go to the Chrome Extensions page: `chrome://extensions/`
-3. Upload the folder as an unpacked extension
-4. Have fun!
+## Features
 
-### Usage
-1. Go to a website that you want to block ads on
-2. Click on the icon in the top right corner of the browser to open the popup
-3. Click on the "Block Ads" button to block ads on the current website
+- **Efficient Ad Blocking:** Automatically blocks common ads, banners, and pop-ups
+- **Performance Optimized:** Minimal impact on browser performance and memory usage
+- **User-Friendly Interface:** Simple one-click activation and intuitive controls
+- **Privacy Focused:** No data collection, completely private and secure
+- **Regular Updates:** Constantly updated filter lists to block new ad sources
+- **Custom Filters:** Ability to add your own custom blocking rules
+- **Site Whitelist:** Easily disable blocking on trusted websites
 
-### Screenshots
-TODO...
+## Installation
+
+1. **Install from Chrome Web Store:**
+   - Visit the [Albz Ad Blocker page](https://chrome.google.com/webstore/detail/albz-ad-blocker) on Chrome Web Store
+   - Click "Add to Chrome"
+   - Follow the prompts to complete installation
+
+2. **Manual Installation (Developer Mode):**
+   
+   git clone https://github.io/alBz/albz-ad-blocker
+   
+   - Open Chrome and go to `chrome://extensions/`
+   - Enable "Developer mode" in the top right
+   - Click "Load unpacked" and select the extension directory
+
+## Usage
+
+1. Click the Albz Ad Blocker icon in your Chrome toolbar
+2. Toggle the switch to enable/disable ad blocking
+3. Use the settings menu to customize blocking preferences
+4. Add sites to whitelist if needed
+
+## Support
+
+- Report issues on our [Issue Tracker](https://github.io/alBz/albz-ad-blocker/issues)
+- Join our community discussions
+- Check our [Wiki](https://github.io/alBz/albz-ad-blocker/wiki) for guides and FAQs
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+## License
+
+This project is licensed under the MIT License—see the [LICENSE](LICENSE) file for details.
