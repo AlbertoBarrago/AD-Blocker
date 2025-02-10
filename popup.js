@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response && response.blockedAds && response.blockedAds.length > 0) {
                     blockedList.style.display = "block";
-                    blockedList.innerHTML = ""; // Clear previous entries
+                    blockedList.innerHTML = "";
                     totalCount.textContent = response.blockedAds.length;
 
                     response.blockedAds.forEach(ad => {
