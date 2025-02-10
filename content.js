@@ -1,9 +1,12 @@
-/**
- * Immediately invoked function expression (IIFE) to handle ad blocking functionality.
- * Sets up CSS rules, mutation observers, and message handling for blocking and tracking ads.
- */
-(function () {
-    const styleBannerRules = `
+chrome.storage.sync.get({pluginDisabled: false}, (result) => {
+    if (result.pluginDisabled) {
+        console.log('Ad Blocker is disabled. Exiting content script.');
+        return;
+    }
+
+    // Proceed with ad blocking functionality if enabled
+    (function () {
+        const styleBannerRules = `
         .banner, .banner-ad, .sticky-banner, .top-banner, .header-banner,
         .promotional-banner, .floating-banner, .adk_interstitial-creativeless,
         aside[class*="banner"], section[class*="banner"], div[class*="banner"],
@@ -18,27 +21,27 @@
         }
     `;
 
-    const styleSheet = document.createElement("style");
-    styleSheet.textContent = styleBannerRules;
-    document.documentElement.appendChild(styleSheet);
+        const styleSheet = document.createElement("style");
+        styleSheet.textContent = styleBannerRules;
+        document.documentElement.appendChild(styleSheet);
 
-    const blockedAds = new Set();
+        const blockedAds = new Set();
 
-    /**
-     * Updates the extension badge with the count of blocked ads
-     * @param {number} count - The number of blocked ads to display on the badge
-     */
-    function updateBadgeCount(count) {
-        if (chrome?.runtime?.sendMessage) {
-            chrome.runtime.sendMessage({ action: "updateBadge", count });
+        /**
+         * Updates the extension badge with the count of blocked ads
+         * @param {number} count - The number of blocked ads to display on the badge
+         */
+        function updateBadgeCount(count) {
+            if (chrome?.runtime?.sendMessage) {
+                chrome.runtime.sendMessage({action: "updateBadge", count});
+            }
         }
-    }
 
-    /**
-     * Removes advertisement elements from the page and tracks them
-     */
-    function removeAds() {
-        const adSelectors = `
+        /**
+         * Removes advertisement elements from the page and tracks them
+         */
+        function removeAds() {
+            const adSelectors = `
             [id*="google_ads"], [id*="banner"], [class*="ads"], [class*="advertisement"],
             [id*="advert"], iframe[id*="google_ads_iframe"], [class*="ad-container"],
             [class*="sponsored"], [class*="adk_interstitial"], [id*="carbonads"],
@@ -52,50 +55,51 @@
             div[class*="sponsor"], div[class*="partner-ad"]
         `;
 
-        const adElements = document.querySelectorAll(adSelectors);
+            const adElements = document.querySelectorAll(adSelectors);
 
-        adElements.forEach(ad => {
-            if (ad && (ad.id || ad.className)) {
-                const identifier = ad.id || ad.className;
-                if (!blockedAds.has(identifier)) {
-                    blockedAds.add(identifier);
-                    updateBadgeCount(blockedAds.size);
-                }
-                requestAnimationFrame(() => ad.remove());
-            }
-        });
-    }
-
-    // Set up message listener for badge count requests
-    chrome.runtime?.onMessage?.addListener((message, sender, sendResponse) => {
-        if (message.action === "getBlockedAds") {
-            sendResponse({ blockedAds: Array.from(blockedAds) });
-        }
-        return true;
-    });
-
-    /**
-     * Initializes the mutation observer to watch for new ad elements
-     * If document.body Body isn't ready, sets up an observer to wait for it
-     */
-    function initObserver() {
-        if (!document.body) {
-            const observer = new MutationObserver(() => {
-                if (document.body) {
-                    observer.disconnect();
-                    initObserver();
+            adElements.forEach(ad => {
+                if (ad && (ad.id || ad.className)) {
+                    const identifier = ad.id || ad.className;
+                    if (!blockedAds.has(identifier)) {
+                        blockedAds.add(identifier);
+                        updateBadgeCount(blockedAds.size);
+                    }
+                    requestAnimationFrame(() => ad.remove());
                 }
             });
-            observer.observe(document.documentElement, { childList: true });
-            return;
         }
 
-        const mutationObserver = new MutationObserver(() => removeAds());
-        mutationObserver.observe(document.body, { childList: true, subtree: true });
+        // Listen for message requests (e.g., from the popup) and provide list of blocked ads.
+        chrome.runtime?.onMessage?.addListener((message, sender, sendResponse) => {
+            if (message.action === "getBlockedAds") {
+                sendResponse({blockedAds: Array.from(blockedAds)});
+            }
+            return true;
+        });
 
-        removeAds();
-    }
+        /**
+         * Initializes the mutation observer to watch for new ad elements.
+         * If document.body isn't ready, sets up an observer to wait for it.
+         */
+        function initObserver() {
+            if (!document.body) {
+                const observer = new MutationObserver(() => {
+                    if (document.body) {
+                        observer.disconnect();
+                        initObserver();
+                    }
+                });
+                observer.observe(document.documentElement, {childList: true});
+                return;
+            }
 
-    document.addEventListener("DOMContentLoaded", initObserver);
-    initObserver();
-})();
+            const mutationObserver = new MutationObserver(() => removeAds());
+            mutationObserver.observe(document.body, {childList: true, subtree: true});
+
+            removeAds();
+        }
+
+        document.addEventListener("DOMContentLoaded", initObserver);
+        initObserver();
+    })();
+});
