@@ -18,11 +18,12 @@ jobs:
         run: |
           VERSION=$(jq -r '.version' manifest.json)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Version is $VERSION"
 
       - name: Create artifact zip with version in name
         run: |
-          zip -r albz-ad-blocker-${VERSION}.zip manifest.json background.js popup.html icon.png README.md
+          zip -r albz-ad-blocker-${{ env.VERSION }}.zip manifest.json background.js popup.html icon.png README.md
           ls -l albz-ad-blocker-*.zip
 
       - name: Upload artifact
