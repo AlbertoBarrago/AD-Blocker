@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalCount = document.getElementById('total-count');
     const disableSwitch = document.getElementById('disable-plugin');
     const pluginIcon = document.getElementById('plugin-icon');
+    const statsContainer = document.getElementById('stats-container');
 
     chrome.storage.sync.get({pluginDisabled: false}, (data) => {
         // Update the switch UI using the stored value
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.pluginDisabled) {
             pluginIcon.classList.remove('active');
             blockedList.style.display = "none";
+            statsContainer.style.display = "none";
             showMessage('Ad Blocker is disabled.');
         } else {
             pluginIcon.classList.add('active');
@@ -62,8 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isDisabled) {
                 pluginIcon.classList.remove('active');
                 blockedList.style.display = "none";
+                statsContainer.style.display = "none";
                 showMessage('Ad Blocker is disabled.');
             } else {
+                statsContainer.style.display = "flex";
                 pluginIcon.classList.add('active');
                 location.reload();
             }
@@ -84,6 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'no-ads-message';
         msgDiv.textContent = message;
-        document.body.appendChild(msgDiv);
+
+        const footer = document.querySelector('footer');
+        if (footer) {
+            footer.parentNode.insertBefore(msgDiv, footer);
+        } else {
+            document.body.appendChild(msgDiv);
+        }
     }
 });
