@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <style>
         body {
             width: 350px;
@@ -42,11 +43,65 @@
             background-repeat: no-repeat;
             background-position: center;
             background-image: url('icons/shield.png');
+            transition: filter 0.3s ease;
         }
 
         .notification-icon.active {
             background-image: url('icons/lightning.png');
             animation: pulse 1.5s infinite;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hide the default checkbox */
+        .toggle-switch input[type="checkbox"] {
+            display: none;
+        }
+
+        /* The switch label */
+        .switch-label {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .switch-label::after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch input[type="checkbox"]:checked + .switch-label {
+            background: #4CAF50;
+        }
+
+        .toggle-switch input[type="checkbox"]:checked + .switch-label::after {
+            transform: translateX(26px);
+        }
+
+        .toggle-text {
+            font-size: 14px;
+            color: #333;
         }
 
         @keyframes pulse {
@@ -98,14 +153,6 @@
             border-radius: 8px;
             background: #f1f3f4;
             margin-top: 20px;
-            display: none;
-        }
-
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #666;
         }
     </style>
     <title>albz-ad-blocker</title>
@@ -115,12 +162,21 @@
     <img src="icons/icon48.png" width="24" height="24" alt="icon">
     <h3>Ad Blocker Stats</h3>
 </div>
+
+<div class="toggle-switch">
+    <span class="toggle-text">Disable Ad Blocker</span>
+    <input type="checkbox" id="disable-plugin">
+    <label for="disable-plugin" class="switch-label"></label>
+</div>
+
 <div class="stats">
-    <div class="notification-icon"></div>
+    <div class="notification-icon active" id="plugin-icon"></div>
     <span id="total-count" class="counter">0</span> ads blocked on this page
 </div>
 <div id="blocked-list"></div>
-<div class="footer"><small>Made with love by <a target="_blank" href="https://albertobarrago.github.io/">alBz</a></small></div>
+<div class="footer">
+    <small>Made with love by <a target="_blank" href="https://albertobarrago.github.io/">alBz</a></small>
+</div>
 <script src="popup.js"></script>
 </body>
 </html>
