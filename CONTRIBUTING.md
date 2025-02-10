@@ -33,7 +33,7 @@
 ## Pull Request Process
 
 1. Ensure your code follows the style guidelines
-2. Update the README.md with details of changes if needed
+2. Update the CHANGELOG.md with details of changes if needed
 3. The PR will be merged once you have the sign-off of at least one maintainer
 
 ## License
