@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const statsContainer = document.getElementById('stats-container');
 
     chrome.storage.sync.get({pluginDisabled: false}, (data) => {
-        // Update the switch UI using the stored value
         disableSwitch.checked = data.pluginDisabled;
 
         // Reflect the state on the icon and blocked list
@@ -39,10 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (response && response.blockedAds && response.blockedAds.length > 0) {
                             blockedList.style.display = "block";
                             blockedList.innerHTML = "";
-                            totalCount.textContent = response.blockedAds.length;
+                            totalCount.textContent = String(response.blockedAds.length);
                             response.blockedAds.forEach(ad => {
                                 const div = document.createElement('div');
                                 div.className = 'blocked-item';
+
                                 div.textContent = ad;
                                 blockedList.appendChild(div);
                             });

@@ -43,12 +43,10 @@
             gap: 10px;
         }
 
-        /* Nasconde il checkbox */
         .toggle-switch input[type="checkbox"] {
             display: none;
         }
 
-        /* Stile per l'interruttore */
         .switch-label {
             position: relative;
             display: inline-block;
@@ -134,11 +132,23 @@
         #blocked-list {
             display: none;
             max-height: 300px;
+            width: 350px;
             overflow-y: auto;
+            white-space: nowrap;
+            text-overflow: ellipsis;
             background: white;
             border-radius: 8px;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .blocked-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            overflow-x: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            margin-right: 10px;
         }
 
         .no-ads-message {
