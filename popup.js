@@ -2,10 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const disableSwitch = document.getElementById('disable-plugin');
     const pluginIcon = document.getElementById('plugin-icon');
     const statsContainer = document.getElementById('stats-container');
+    const actionContainer = document.getElementById('actions-container');
     const addWhitelistBtn = document.getElementById('whitelist-toggle');
     const viewAdsBtn = document.getElementById('view-ads');
 
-    // Initialize the popup UI
     function initPopup() {
         chrome.storage.sync.get({pluginDisabled: false}, (data) => {
             disableSwitch.checked = data.pluginDisabled;
@@ -13,28 +13,34 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.pluginDisabled) {
                 pluginIcon.classList.remove('active');
                 statsContainer.style.display = "none";
-                showMessage('Ad Blocker is disabled.');
+                actionContainer.style.display = "none";
+                showMessage('Ad Blocker is disabled. Reload the page to apply.');
             } else {
                 pluginIcon.classList.add('active');
                 statsContainer.style.display = "flex";
-                // We are now hiding the blocked list section by default.
-                // Instead, users can view it via the "view ads" button.
+                actionContainer.style.display = "flex";
             }
         });
     }
 
-    // Toggle plugin enable/disable without reloading the popup.
     disableSwitch.addEventListener('change', (event) => {
         const isDisabled = event.target.checked;
         chrome.storage.sync.set({pluginDisabled: isDisabled}, () => {
             if (isDisabled) {
                 pluginIcon.classList.remove('active');
                 statsContainer.style.display = "none";
-                showMessage('Ad Blocker is disabled, reload the page to apply.');
+                actionContainer.style.display = "none";
+                showMessage('Ad Blocker is disabled. Reload the page to apply.');
             } else {
                 statsContainer.style.display = "flex";
+                actionContainer.style.display = "flex";
                 pluginIcon.classList.add('active');
             }
+            chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+                if (tabs && tabs[0] && tabs[0].id) {
+                    chrome.tabs.reload(tabs[0].id);
+                }
+            });
         });
     });
 
@@ -62,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });*/
 
-    // View the list of blocked ads in an alert.
     viewAdsBtn.addEventListener('click', () => {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (tabs.length === 0) return;
@@ -89,8 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Utility function to show a message in the popup UI.
-    function showMessage(message) {
+    const showMessage = (message) => {
         const existingMsg = document.querySelector('.no-ads-message');
         if (existingMsg) {
             existingMsg.remove();
@@ -106,6 +110,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Initialize the popup when the DOM content is loaded.
     initPopup();
 });
