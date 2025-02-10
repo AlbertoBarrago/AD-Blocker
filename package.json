@@ -1,6 +1,6 @@
 {
   "name": "albz-ad-blocker",
-  "version": "0.8.2",
+  "version": "1.0.0",
   "description": "Chrome extension for blocking ads and banners",
   "main": "background.js",
   "scripts": {

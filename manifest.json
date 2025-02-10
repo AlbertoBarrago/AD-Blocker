@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "albz-ad-blocker",
-  "version": "0.8.2",
+  "version": "1.0.0",
   "description": "Blocks ads on websites and YouTube",
   "author": "Alberto Barrago (alBz)",
   "icons": {
