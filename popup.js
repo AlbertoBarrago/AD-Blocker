@@ -21,22 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 actionContainer.style.display = "flex";
             }
         });
-    }
-
-    const _showMessage = (message) => {
-        const existingMsg = document.querySelector('.no-ads-message');
-        if (existingMsg) {
-            existingMsg.remove();
-        }
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'no-ads-message';
-        msgDiv.textContent = message;
-        const footer = document.querySelector('footer');
-        if (footer) {
-            footer.parentNode.insertBefore(msgDiv, footer);
-        } else {
-            document.body.appendChild(msgDiv);
-        }
+        _updateWhitelistButton()
     }
 
     disableSwitch.addEventListener('change', (event) => {
@@ -115,6 +100,41 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    const _showMessage = (message) => {
+        const existingMsg = document.querySelector('.no-ads-message');
+        if (existingMsg) {
+            existingMsg.remove();
+        }
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'no-ads-message';
+        msgDiv.textContent = message;
+        const footer = document.querySelector('footer');
+        if (footer) {
+            footer.parentNode.insertBefore(msgDiv, footer);
+        } else {
+            document.body.appendChild(msgDiv);
+        }
+    }
+
+    const _updateWhitelistButton = () => {
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+            if (!tabs.length) return;
+            try {
+                const url = new URL(tabs[0].url);
+                const hostname = url.hostname;
+                chrome.storage.sync.get({whitelist: []}, (data) => {
+                    if (data.whitelist.includes(hostname)) {
+                        whitelistToggleBtn.textContent = 'Remove from Whitelist';
+                    } else {
+                        whitelistToggleBtn.textContent = 'Add to Whitelist';
+                    }
+                });
+            } catch (error) {
+                console.error("Error updating whitelist button:", error);
+            }
+        });
+    }
 
     initPopup();
 });
