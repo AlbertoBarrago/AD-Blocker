@@ -3,10 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const pluginIcon = document.getElementById('plugin-icon');
     const statsContainer = document.getElementById('stats-container');
     const actionContainer = document.getElementById('actions-container');
-    const addWhitelistBtn = document.getElementById('whitelist-toggle');
+    const whitelistToggleBtn = document.getElementById('whitelist-toggle');
     const viewAdsBtn = document.getElementById('view-ads');
 
-    function initPopup() {
+    const initPopup = () => {
         chrome.storage.sync.get({pluginDisabled: false}, (data) => {
             disableSwitch.checked = data.pluginDisabled;
 
@@ -14,13 +14,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 pluginIcon.classList.remove('active');
                 statsContainer.style.display = "none";
                 actionContainer.style.display = "none";
-                showMessage('Ad Blocker is disabled. Reload the page to apply.');
+                _showMessage('Ad Blocker is disabled.');
             } else {
                 pluginIcon.classList.add('active');
                 statsContainer.style.display = "flex";
                 actionContainer.style.display = "flex";
             }
         });
+    }
+
+    const _showMessage = (message) => {
+        const existingMsg = document.querySelector('.no-ads-message');
+        if (existingMsg) {
+            existingMsg.remove();
+        }
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'no-ads-message';
+        msgDiv.textContent = message;
+        const footer = document.querySelector('footer');
+        if (footer) {
+            footer.parentNode.insertBefore(msgDiv, footer);
+        } else {
+            document.body.appendChild(msgDiv);
+        }
     }
 
     disableSwitch.addEventListener('change', (event) => {
@@ -30,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pluginIcon.classList.remove('active');
                 statsContainer.style.display = "none";
                 actionContainer.style.display = "none";
-                showMessage('Ad Blocker is disabled. Reload the page to apply.');
+                _showMessage('Ad Blocker is disabled.');
             } else {
                 statsContainer.style.display = "flex";
                 actionContainer.style.display = "flex";
@@ -44,8 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Add the current site to the whitelist.
-    /*addWhitelistBtn.addEventListener('click', () => {
+    whitelistToggleBtn.addEventListener('click', () => {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (!tabs.length) return;
             try {
@@ -53,20 +68,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 const hostname = url.hostname;
                 chrome.storage.sync.get({whitelist: []}, (data) => {
                     const whitelist = data.whitelist;
-                    if (!whitelist.includes(hostname)) {
+                    if (whitelist.includes(hostname)) {
+                        const updatedWhitelist = whitelist.filter(site => site !== hostname);
+                        chrome.storage.sync.set({whitelist: updatedWhitelist}, () => {
+                            alert(`Removed ${hostname} from your whitelist.`);
+                            whitelistToggleBtn.textContent = 'Add to Whitelist';
+                            chrome.tabs.reload(tabs[0].id);
+                        });
+                    } else {
                         whitelist.push(hostname);
                         chrome.storage.sync.set({whitelist: whitelist}, () => {
                             alert(`Added ${hostname} to your whitelist.`);
+                            whitelistToggleBtn.textContent = 'Remove from Whitelist';
+                            chrome.tabs.reload(tabs[0].id);
                         });
-                    } else {
-                        alert(`${hostname} is already in your whitelist.`);
                     }
                 });
             } catch (error) {
                 console.error("Error retrieving current site:", error);
             }
         });
-    });*/
+    });
 
     viewAdsBtn.addEventListener('click', () => {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
@@ -93,22 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    const showMessage = (message) => {
-        const existingMsg = document.querySelector('.no-ads-message');
-        if (existingMsg) {
-            existingMsg.remove();
-        }
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'no-ads-message';
-        msgDiv.textContent = message;
-        const footer = document.querySelector('footer');
-        if (footer) {
-            footer.parentNode.insertBefore(msgDiv, footer);
-        } else {
-            document.body.appendChild(msgDiv);
-        }
-    }
 
     initPopup();
 });
