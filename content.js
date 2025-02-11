@@ -1,6 +1,12 @@
-chrome.storage.sync.get({pluginDisabled: false}, (result) => {
+chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
     if (result.pluginDisabled) {
         // Disable ad blocking functionality if disabled
+        return;
+    }
+
+    const currentHostname = window.location.hostname;
+    if (result.whitelist && result.whitelist.includes(currentHostname)) {
+        console.log(`Ad blocking skipped for whitelisted site: ${currentHostname}`);
         return;
     }
 
