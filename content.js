@@ -10,18 +10,34 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
         return;
     }
 
+    // Special handling for specific sites that have ads in the video player
+    const sensitiveHosts = ['youtube.com', 'www.youtube.com'];
+    if (sensitiveHosts.some(host => currentHostname.includes(host))) {
+        const youtubeSpecificRules = `
+            .video-ads,
+            .ytp-ad-overlay-container,
+            .ytd-display-ad-renderer,
+            .ytd-companion-slot-renderer {
+                display: none !important;
+            }
+        `;
+        const styleSheet = document.createElement("style");
+        styleSheet.textContent = youtubeSpecificRules;
+        document.documentElement.appendChild(styleSheet);
+        return;
+    }
+
     (function () {
         const styleBannerRules = `
-        .banner, .banner-ad, .sticky-banner, .top-banner, .header-banner,
-        .promotional-banner, .floating-banner, .adk_interstitial-creativeless,
-        aside[class*="banner"], section[class*="banner"], div[class*="banner"],
-        div[id*="banner"], div[class*="adv"], div[class*="sticky"][class*="ad"],
-        div[style*="position: fixed"], div[style*="position:fixed"],
-        div[style*="z-index: 9999"], div[style*="z-index:9999"],
-        div[class*="ad-"], div[class*="-ad"], div[class*="sponsored"],
-        div[class*="promotion"], div[class*="promoted"], div[class*="onetrust"], div[id^="google_ads"],
-        div[class^="google_ad"], div[id*="sponsored"], div[class*="sponsored"],
-        div[id*="promoted"], div[class*="promoted"] {
+        .banner:not([class*="player"]):not([class*="video"]), 
+        .banner-ad, 
+        .sticky-banner,
+        div[class*="ad-"]:not([class*="player"]):not([class*="video"]),
+        div[class*="-ad"]:not([class*="player"]):not([class*="video"]),
+        div[class*="sponsored"],
+        div[class*="promotion"]:not([class*="video"]),
+        div[id^="google_ads"],
+        div[class^="google_ad"] {
             display: none !important;
         }
     `;
@@ -47,17 +63,20 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
          */
         function removeAds() {
             const adSelectors = `
-            [id*="google_ads"], [id*="banner"], [class*="ads"], [class*="advertisement"],
-            [id*="advert"], iframe[id*="google_ads_iframe"], [class*="ad-container"],
-            [class*="sponsored"], [class*="adk_interstitial"], [id*="carbonads"],
-            [id*="__lxG__bsticky_lx_728768"], [class*="adsbox"], [class*="adsbygoogle"],
-            [class*="ad-slot"], [class*="ad-wrapper"], [data-ad-client],
-            [id*="div-gpt-ad"], [class*="adv"], iframe[src*="doubleclick.net"],
-            iframe[src*="ad."], div[aria-label*="advertisement"], [id*="adunit"],
-            [class*="promo"], div[class*="overlay-ad"], div[class*="popup-ad"],
-            div[class*="fullscreen-ad"], div[style*="z-index: 9999"],
-            div[class*="sticky-ad"], aside[class*="ad"], section[class*="ad"],
-            div[class*="sponsor"], div[class*="partner-ad"]
+            [id*="google_ads"], 
+            [class*="ads"]:not([class*="player"]):not([class*="video"]):not([class*="form"]),
+            [class*="advertisement"],
+            [id*="advert"], 
+            iframe[id*="google_ads_iframe"],
+            [class*="sponsored"]:not([class*="player"]):not([class*="video"]):not([class*="form"]),
+            [class*="adsbox"],
+            [class*="adsbygoogle"],
+            [class*="ad-slot"],
+            [data-ad-client],
+            [id*="div-gpt-ad"],
+            iframe[src*="doubleclick.net"],
+            iframe[src*="ad."],
+            [id*="adunit"]
         `;
 
             const adElements = document.querySelectorAll(adSelectors);
