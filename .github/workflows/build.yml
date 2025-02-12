@@ -31,5 +31,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: albz-ad-blocker-${{ env.VERSION }}
+          name: albz-ad-blocker-${{ steps.get_version.outputs.VERSION }}
           path: albz-ad-blocker.zip
