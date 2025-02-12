@@ -1,5 +1,11 @@
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete') {
+        // Reset badge count when loading new page
+        chrome.action.setBadgeText({
+            text: '0',
+            tabId: tabId
+        });
+
         chrome.declarativeNetRequest.updateDynamicRules({
             removeRuleIds: [1],
             addRules: [{
@@ -19,12 +25,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "updateBadge") {
+        const count = parseInt(message.count) || 0;
+
         chrome.action.setBadgeText({
-            text: message.count.toString(),
+            text: count.toString(),
             tabId: sender.tab.id
         });
         chrome.action.setBadgeBackgroundColor({
             color: '#e50d3f',
         });
+
+        // Reset total count when updating badge
+        chrome.storage.sync.set({totalAdsBlocked: count});
     }
 });

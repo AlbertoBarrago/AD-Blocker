@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         chrome.storage.sync.set({whitelist: updatedWhitelist}, () => {
                             alert(`Removed ${hostname} from your whitelist.`);
                             whitelistToggleBtn.textContent = 'Add to Whitelist';
+                            whitelistToggleBtn.classList.remove('red-button');
                             chrome.tabs.reload(tabs[0].id);
                         });
                     } else {
@@ -65,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         chrome.storage.sync.set({whitelist: whitelist}, () => {
                             alert(`Added ${hostname} to your whitelist.`);
                             whitelistToggleBtn.textContent = 'Remove from Whitelist';
+                            whitelistToggleBtn.classList.add('red-button');
                             chrome.tabs.reload(tabs[0].id);
                         });
                     }
@@ -124,10 +126,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const url = new URL(tabs[0].url);
                 const hostname = url.hostname;
                 chrome.storage.sync.get({whitelist: []}, (data) => {
-                    if (data.whitelist.includes(hostname)) {
+                    const isWhitelisted = data.whitelist.includes(hostname);
+                    
+                    // Update button appearance
+                    if (isWhitelisted) {
                         whitelistToggleBtn.textContent = 'Remove from Whitelist';
+                        whitelistToggleBtn.classList.add('red-button');
+                        // Hide stats container
+                        document.getElementById('stats-container').style.display = 'none';
                     } else {
                         whitelistToggleBtn.textContent = 'Add to Whitelist';
+                        whitelistToggleBtn.classList.remove('red-button');
+                        // Show stats container
+                        document.getElementById('stats-container').style.display = 'flex';
                     }
                 });
             } catch (error) {
@@ -136,5 +147,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    chrome.storage.sync.get({totalAdsBlocked: 0}, (data) => {
+        if (document.getElementById('total-counter') && data.totalAdsBlocked > 0) {
+            document.getElementById('total-counter').textContent = data.totalAdsBlocked;
+        }
+    });
+
     initPopup();
+    _updateWhitelistButton();
 });
