@@ -6,7 +6,7 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
 
     const currentHostname = window.location.hostname;
     if (result.whitelist && result.whitelist.includes(currentHostname)) {
-        console.log(`Ad blocking skipped for whitelisted site: ${currentHostname}`);
+        // Skip ad blocking for white_listed site
         return;
     }
 
@@ -19,7 +19,7 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
         div[style*="position: fixed"], div[style*="position:fixed"],
         div[style*="z-index: 9999"], div[style*="z-index:9999"],
         div[class*="ad-"], div[class*="-ad"], div[class*="sponsored"],
-        div[class*="promotion"], div[class*="promoted"], div[id^="google_ads"],
+        div[class*="promotion"], div[class*="promoted"], div[class*="onetrust"], div[id^="google_ads"],
         div[class^="google_ad"], div[id*="sponsored"], div[class*="sponsored"],
         div[id*="promoted"], div[class*="promoted"] {
             display: none !important;

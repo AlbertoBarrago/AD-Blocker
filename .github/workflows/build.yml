@@ -26,7 +26,7 @@ jobs:
 
       - name: Create artifact zip with version in name
         run: |
-          zip -r albz-ad-blocker-${{ env.VERSION }}.zip manifest.json content.js background.js popup.html popup.js icons/ README.md
+          zip -r ${{ env.VERSION }}.albz-ad-blocker.zip manifest.json content.js background.js popup.html popup.js icons/ README.md
           ls -l albz-ad-blocker-*.zip
       - name: Upload artifact
         uses: actions/upload-artifact@v4
