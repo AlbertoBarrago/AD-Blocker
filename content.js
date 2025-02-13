@@ -10,7 +10,6 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
         return;
     }
 
-    // Special handling for specific sites that have ads in the video player
     const sensitiveHosts = ['youtube.com', 'www.youtube.com'];
     if (sensitiveHosts.some(host => currentHostname.includes(host))) {
         const youtubeSpecificRules = `
@@ -62,7 +61,7 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
          * Updates the extension badge with the count of blocked ads
          * @param {number} count - The number of blocked ads to display on the badge
          */
-        function updateBadgeCount(count) {
+        const updateBadgeCount = (count) => {
             if (chrome?.runtime?.sendMessage) {
                 chrome.runtime.sendMessage({
                     action: "updateBadge",
@@ -75,7 +74,7 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
         /**
          * Removes advertisement elements from the page and tracks them
          */
-        function removeAds() {
+        const removeAds = () => {
             const adSelectors = `
             [id*="google_ads"],
             iframe[id*="google_ads_iframe"],
@@ -119,19 +118,11 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
             });
         }
 
-        // Listen for message requests (e.g., from the popup) and provide list of blocked ads.
-        chrome.runtime?.onMessage?.addListener((message, sender, sendResponse) => {
-            if (message.action === "getBlockedAds") {
-                sendResponse({blockedAds: Array.from(blockedAds)});
-            }
-            return true;
-        });
-
         /**
          * Initializes the mutation observer to watch for new ad elements.
          * If document.body isn't ready, sets up an observer to wait for it.
          */
-        function initObserver() {
+        const initObserver = () => {
             if (!document.body) {
                 const observer = new MutationObserver(() => {
                     if (document.body) {

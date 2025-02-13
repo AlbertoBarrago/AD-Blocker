@@ -159,12 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Initialize counters when popup opens
     chrome.runtime.sendMessage({action: "getCurrentCount"}, (response) => {
         updateCounters(response?.count || '0');
     });
 
-    // Listen for counter updates
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.action === "updateCounter" || message.action === "resetCounter") {
             updateCounters(message.count);
