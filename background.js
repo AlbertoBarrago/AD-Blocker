@@ -1,10 +1,25 @@
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === 'complete') {
-        // Reset badge count when loading new page
+let currentPageCounts = new Map();
+let totalAdsBlocked = 0;  // Single source of truth
+
+// Add this function to reset storage
+function resetStorage(tabId) {
+    totalAdsBlocked = 0;  // Reset the centralized counter
+    chrome.storage.sync.set({totalAdsBlocked: 0}, () => {
+        currentPageCounts.set(tabId, 0);
         chrome.action.setBadgeText({
             text: '0',
             tabId: tabId
         });
+        chrome.runtime.sendMessage({
+            action: "resetCounter",
+            count: 0
+        });
+    });
+}
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete') {
+        resetStorage(tabId);
 
         chrome.declarativeNetRequest.updateDynamicRules({
             removeRuleIds: [1],
@@ -23,19 +38,43 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     }
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === "updateBadge") {
-        const count = parseInt(message.count) || 0;
+chrome.tabs.onRemoved.addListener((tabId) => {
+    // Cleanup when tab is closed
+    currentPageCounts.delete(tabId);
+});
 
-        chrome.action.setBadgeText({
-            text: count.toString(),
-            tabId: sender.tab.id
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "getCurrentCount") {
+        sendResponse({count: totalAdsBlocked});
+        return true;
+    }
+    if (message.action === "updateBadge") {
+        const newCount = parseInt(message.count) || 0;
+        
+        // Update the centralized counter
+        totalAdsBlocked = newCount;
+        
+        // Update storage
+        chrome.storage.sync.set({totalAdsBlocked: newCount});
+        
+        // Update badge for all tabs
+        chrome.tabs.query({}, (tabs) => {
+            tabs.forEach(tab => {
+                chrome.action.setBadgeText({
+                    text: newCount.toString(),
+                    tabId: tab.id
+                });
+            });
         });
+        
         chrome.action.setBadgeBackgroundColor({
             color: '#e50d3f',
         });
 
-        // Reset total count when updating badge
-        chrome.storage.sync.set({totalAdsBlocked: count});
+        // Notify popup to update
+        chrome.runtime.sendMessage({
+            action: "updateCounter",
+            count: newCount
+        });
     }
 });
