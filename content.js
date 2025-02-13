@@ -29,17 +29,27 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
 
     (function () {
         const styleBannerRules = `
-        .banner:not([class*="player"]):not([class*="video"]), 
-        .banner-ad, 
-        .sticky-banner,
-        div[class*="ad-"]:not([class*="player"]):not([class*="video"]),
-        div[class*="-ad"]:not([class*="player"]):not([class*="video"]),
-        div[class*="sponsored"],
-        div[class*="promotion"]:not([class*="video"]),
-        div[id^="google_ads"],
-        div[class^="google_ad"] {
-            display: none !important;
-        }
+            .banner:not([class*="player"]):not([class*="video"]),
+            .banner-ad,
+            .sticky-banner,
+
+            div[class*="ad-"]:not([class*="player"]):not([class*="video"]),
+            div[class*="-ad"]:not([class*="player"]):not([class*="video"]),
+            div[class*="advert"]:not([class*="player"]):not([class*="video"]),
+
+            div[class*="sponsor"],
+            div[class*="promotion"]:not([class*="video"]),
+
+            div[id*="ad-"]:not([id*="player"]):not([id*="video"]),
+            div[id*="advert"]:not([id*="player"]):not([id*="video"]),
+
+            div[id^="google_ads"],
+            div[class^="google_ad"] {
+                display: none !important;
+            }
+            div[class*="banner-adv"] {
+                display: none !important;
+            }
     `;
 
         const styleSheet = document.createElement("style");
@@ -54,7 +64,11 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
          */
         function updateBadgeCount(count) {
             if (chrome?.runtime?.sendMessage) {
-                chrome.runtime.sendMessage({action: "updateBadge", count});
+                chrome.runtime.sendMessage({
+                    action: "updateBadge",
+                    count: count,
+                    hostname: window.location.hostname
+                });
             }
         }
 
@@ -63,21 +77,33 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
          */
         function removeAds() {
             const adSelectors = `
-            [id*="google_ads"], 
+            [id*="google_ads"],
+            iframe[id*="google_ads_iframe"],
+            [id*="div-gpt-ad"],
+            [id^="gpt"],
+        
+            [id*="advert"],
+            [id*="adunit"],
+            [id*="adbox"],
+            [id*="__lxG__bsticky_lx_728768"],
+        
             [class*="ads"]:not([class*="player"]):not([class*="video"]):not([class*="form"]),
             [class*="advertisement"],
-            [id*="advert"], 
-            iframe[id*="google_ads_iframe"],
             [class*="sponsored"]:not([class*="player"]):not([class*="video"]):not([class*="form"]),
             [class*="adsbox"],
             [class*="adsbygoogle"],
             [class*="ad-slot"],
-            [data-ad-client],
-            [id*="div-gpt-ad"],
+            [class*="adbox"],
+            .adv,
+            .adv-box,
+        
             iframe[src*="doubleclick.net"],
+            /* Use caution: "iframe[src*="ad."]" is broad; test thoroughly */
             iframe[src*="ad."],
-            [id*="adunit"]
+        
+            [data-ad-client]
         `;
+        
 
             const adElements = document.querySelectorAll(adSelectors);
 

@@ -147,9 +147,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    chrome.storage.sync.get({totalAdsBlocked: 0}, (data) => {
-        if (document.getElementById('total-counter') && data.totalAdsBlocked > 0) {
-            document.getElementById('total-counter').textContent = data.totalAdsBlocked;
+    const updateCounters = (count) => {
+        const statsCounter = document.getElementById('stats-counter');
+        const totalCounter = document.getElementById('total-counter');
+        
+        if (statsCounter) {
+            statsCounter.textContent = count;
+        }
+        if (totalCounter) {
+            totalCounter.textContent = count;
+        }
+    };
+
+    // Initialize counters when popup opens
+    chrome.runtime.sendMessage({action: "getCurrentCount"}, (response) => {
+        updateCounters(response?.count || '0');
+    });
+
+    // Listen for counter updates
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.action === "updateCounter" || message.action === "resetCounter") {
+            updateCounters(message.count);
         }
     });
 
