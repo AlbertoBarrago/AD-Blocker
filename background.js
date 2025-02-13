@@ -1,16 +1,21 @@
 let currentPageCounts = new Map();
-let totalAdsBlocked = 0;  // Single source of truth
+let totalAdsBlocked = 0;
 
-// Add this function to reset storage
+const sendMessageToPopup = (message) => {
+    chrome.runtime.sendMessage(message).catch(() => {
+        // Ignore errors when popup is not open
+    });
+};
+
 function resetStorage(tabId) {
-    totalAdsBlocked = 0;  // Reset the centralized counter
+    totalAdsBlocked = 0; 
     chrome.storage.sync.set({totalAdsBlocked: 0}, () => {
         currentPageCounts.set(tabId, 0);
         chrome.action.setBadgeText({
             text: '0',
             tabId: tabId
         });
-        chrome.runtime.sendMessage({
+        sendMessageToPopup({
             action: "resetCounter",
             count: 0
         });
@@ -39,7 +44,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
-    // Cleanup when tab is closed
     currentPageCounts.delete(tabId);
 });
 
@@ -51,13 +55,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "updateBadge") {
         const newCount = parseInt(message.count) || 0;
         
-        // Update the centralized counter
         totalAdsBlocked = newCount;
         
-        // Update storage
         chrome.storage.sync.set({totalAdsBlocked: newCount});
         
-        // Update badge for all tabs
         chrome.tabs.query({}, (tabs) => {
             tabs.forEach(tab => {
                 chrome.action.setBadgeText({
@@ -71,8 +72,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             color: '#e50d3f',
         });
 
-        // Notify popup to update
-        chrome.runtime.sendMessage({
+        sendMessageToPopup({
             action: "updateCounter",
             count: newCount
         });
