@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const url = new URL(tabs[0].url);
                 const hostname = url.hostname;
                 chrome.storage.sync.get({whitelist: []}, (data) => {
-                    const whitelist = data.whitelist;
+                    let whitelist = data.whitelist || [];
                     if (whitelist.includes(hostname)) {
                         const updatedWhitelist = whitelist.filter(site => site !== hostname);
                         chrome.storage.sync.set({whitelist: updatedWhitelist}, () => {
@@ -81,25 +81,23 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (tabs.length === 0) return;
             const activeTab = tabs[0];
-            if (!activeTab.url || activeTab.url.startsWith('chrome://') || activeTab.url.startsWith('https://chrome.google.com')) {
-                alert("Content script not available on this page.");
-                return;
-            }
-            try {
-                chrome.tabs.sendMessage(activeTab.id, {action: "getBlockedAds"}, (response) => {
-                    if (chrome.runtime.lastError) {
-                        alert("No blocked ads list available on this page.");
-                        return;
-                    }
-                    if (response && response.blockedAds && response.blockedAds.length > 0) {
+
+            // Add debug logging
+            console.log('Requesting blocked ads for tab:', activeTab.id);
+
+            chrome.tabs.sendMessage(activeTab.id, {action: "getBlockedAds"}, (response) => {
+                console.log('Received response:', response);
+
+                if (response && Array.isArray(response.blockedAds)) {
+                    if (response.blockedAds.length > 0) {
                         alert("Blocked Ads:\n" + response.blockedAds.join('\n'));
                     } else {
-                        alert("No ads blocked yet.");
+                        alert("No ads blocked on this page");
                     }
-                });
-            } catch (error) {
-                console.error("Error sending message:", error);
-            }
+                } else {
+                    alert("No blocked ads data available");
+                }
+            });
         });
     });
 

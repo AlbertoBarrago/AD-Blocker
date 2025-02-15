@@ -102,7 +102,7 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
         
             [data-ad-client]
         `;
-        
+
 
             const adElements = document.querySelectorAll(adSelectors);
 
@@ -142,5 +142,14 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
 
         document.addEventListener("DOMContentLoaded", initObserver);
         initObserver();
+
+
+        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+            if (request.action === "getBlockedAds") {
+                sendResponse({
+                    blockedAds: Array.from(blockedAds)
+                });
+            }
+        });
     })();
 });
