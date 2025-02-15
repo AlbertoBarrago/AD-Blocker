@@ -26,8 +26,8 @@ jobs:
 
       - name: Create artifact zip with version in name
         run: |
-          zip -r albz-ad-blocker.zip manifest.json content.js background.js popup.html popup.js icons/ README.md
-          ls -l albz-ad-blocker.zip
+          zip -r albz-adv-blocker.zip manifest.json content.js background.js popup.html popup.js style.css icons/ README.md
+          ls -l albz-adv-blocker.zip
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
