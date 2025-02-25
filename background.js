@@ -24,7 +24,6 @@ function resetStorage(tabId) {
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete') {
-        resetStorage(tabId);
 
         chrome.declarativeNetRequest.updateDynamicRules({
             removeRuleIds: [1],
