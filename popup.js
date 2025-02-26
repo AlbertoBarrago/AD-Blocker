@@ -1,41 +1,46 @@
+/**
+ * Initializes the popup functionality for the ad blocker extension.
+ * Handles plugin disable/enable, allowlist management, and blocked ads viewing.
+ * @listens DOMContentLoaded
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const disableSwitch = document.getElementById('disable-plugin');
-    const pluginIcon = document.getElementById('plugin-icon');
     const statsContainer = document.getElementById('stats-container');
     const actionContainer = document.getElementById('actions-container');
     const whitelistToggleBtn = document.getElementById('whitelist-toggle');
     const viewAdsBtn = document.getElementById('view-ads');
+    const footer = document.querySelector('footer');
+    const version = chrome.runtime.getManifest().version;
 
+    /**
+     * Initializes the popup state by checking plugin status and updating UI.
+     * @function
+     */
     const initPopup = () => {
         chrome.storage.sync.get({pluginDisabled: false}, (data) => {
             disableSwitch.checked = data.pluginDisabled;
 
             if (data.pluginDisabled) {
-                pluginIcon.classList.remove('active');
-                statsContainer.style.display = "none";
-                actionContainer.style.display = "none";
                 _showMessage('Ad Blocker is disabled.');
-            } else {
-                pluginIcon.classList.add('active');
-                statsContainer.style.display = "flex";
-                actionContainer.style.display = "flex";
             }
         });
         _updateWhitelistButton()
     }
 
+    /**
+     * Handles the plugin enable/disable switch state changes.
+     * @param {Event} event - The change event from the switch.
+     */
     disableSwitch.addEventListener('change', (event) => {
         const isDisabled = event.target.checked;
         chrome.storage.sync.set({pluginDisabled: isDisabled}, () => {
             if (isDisabled) {
-                pluginIcon.classList.remove('active');
                 statsContainer.style.display = "none";
                 actionContainer.style.display = "none";
                 _showMessage('Ad Blocker is disabled.');
             } else {
                 statsContainer.style.display = "flex";
                 actionContainer.style.display = "flex";
-                pluginIcon.classList.add('active');
             }
             chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
                 if (tabs && tabs[0] && tabs[0].id) {
@@ -45,6 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    /**
+     * Handles the whitelist toggle button click events.
+     * Adds or removes the current site from the whitelist.
+     * @listens click
+     */
     whitelistToggleBtn.addEventListener('click', () => {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (!tabs.length) return;
@@ -77,17 +87,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    /**
+     * Handles the view blocked ads button click events.
+     * Displays a list of blocked ads for the current page.
+     * @listens click
+     */
     viewAdsBtn.addEventListener('click', () => {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (tabs.length === 0) return;
             const activeTab = tabs[0];
-
-            // Add debug logging
-            console.log('Requesting blocked ads for tab:', activeTab.id);
-
             chrome.tabs.sendMessage(activeTab.id, {action: "getBlockedAds"}, (response) => {
-                console.log('Received response:', response);
-
                 if (response && Array.isArray(response.blockedAds)) {
                     if (response.blockedAds.length > 0) {
                         alert("Blocked Ads:\n" + response.blockedAds.join('\n'));
@@ -101,6 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    /**
+     * Displays a message in the popup UI.
+     * @param {string} message - The message to display.
+     * @private
+     */
     const _showMessage = (message) => {
         const existingMsg = document.querySelector('.no-ads-message');
         if (existingMsg) {
@@ -117,6 +131,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Updates the whitelist button state based on current site status.
+     * @private
+     */
     const _updateWhitelistButton = () => {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (!tabs.length) return;
@@ -125,18 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const hostname = url.hostname;
                 chrome.storage.sync.get({whitelist: []}, (data) => {
                     const isWhitelisted = data.whitelist.includes(hostname);
-
-                    // Update button appearance
                     if (isWhitelisted) {
                         whitelistToggleBtn.textContent = 'Remove from Whitelist';
                         whitelistToggleBtn.classList.add('red-button');
-                        // Hide stats container
-                        document.getElementById('stats-container').style.display = 'none';
                     } else {
                         whitelistToggleBtn.textContent = 'Add to Whitelist';
                         whitelistToggleBtn.classList.remove('red-button');
-                        // Show stats container
-                        document.getElementById('stats-container').style.display = 'flex';
                     }
                 });
             } catch (error) {
@@ -145,35 +157,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const updateCounters = (count) => {
-        const statsCounter = document.getElementById('stats-counter');
-        const totalCounter = document.getElementById('total-counter');
-
-        if (statsCounter) {
-            statsCounter.textContent = count;
-        }
-        if (totalCounter) {
-            totalCounter.textContent = count;
-        }
+    const _initFooter = () => {
+        footer.innerHTML = `
+               <small>Made with ☕️ by <a target="_blank" href="https://albertobarrago.github.io/">alBz</a> v${version}</small>
+        `;
+        document.body.appendChild(footer);
     };
 
-    // Get the current count from the background script
-    chrome.runtime.sendMessage({action: "getCurrentCount"}, (response) => {
-        if (response && response.count !== undefined) {
-            updateCounters(response.count);
-        } else {
-            updateCounters(0);
-        }
-    });
-
-    // This listener isn't needed anymore since we're not getting real-time updates
-    // from the background script. We just get the count when the popup opens.
-    // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    //     if (message.action === "updateCounter" || message.action === "resetCounter") {
-    //         updateCounters(message.count);
-    //     }
-    // });
-
     initPopup();
+    _initFooter();
     _updateWhitelistButton();
 });
