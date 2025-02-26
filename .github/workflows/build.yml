@@ -26,10 +26,10 @@ jobs:
 
       - name: Create artifact zip with version in name
         run: |
-          zip -r albz-adv-blocker.zip manifest.json content.js background.js popup.html popup.js style.css icons/ README.md
-          ls -l albz-adv-blocker.zip
+          zip -r adv-blocker.zip manifest.json content.js background.js popup.html popup.js style.css icons/ README.md
+          ls -l adv-blocker.zip
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: albz-adv-blocker-${{ steps.get_version.outputs.VERSION }}
-          path: albz-adv-blocker.zip
+          name: adv-blocker-${{ steps.get_version.outputs.VERSION }}
+          path: adv-blocker.zip
