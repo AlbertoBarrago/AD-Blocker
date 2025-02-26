@@ -23,7 +23,7 @@ chrome.storage.local.get(['totalAdsBlocked'], (result) => {
  * Updates the extension badge for a specific tab
  * @param {number} tabId - The ID of the tab to update
  */
-function updateBadgeForTab(tabId) {
+const updateBadgeForTab = (tabId) => {
     const count = currentPageCounts.get(tabId) || 0;
 
     chrome.action.setBadgeText({
@@ -32,7 +32,7 @@ function updateBadgeForTab(tabId) {
     });
 
     chrome.action.setBadgeBackgroundColor({
-        color: '#e50d3f',
+        color: '#dc1581',
         tabId: tabId
     });
 }
@@ -40,7 +40,7 @@ function updateBadgeForTab(tabId) {
 /**
  * Applies ad blocking rules using declarativeNetRequest
  */
-function applyAdBlockRules() {
+const applyAdBlockRules = () => {
     chrome.declarativeNetRequest.updateDynamicRules({
         removeRuleIds: [1],
         addRules: [{
@@ -62,7 +62,7 @@ function applyAdBlockRules() {
  * @param {number} tabId - The ID of the tab
  * @returns {number} The new count after incrementing
  */
-function incrementCounter(tabId) {
+const incrementCounter = (tabId) => {
     const currentCount = currentPageCounts.get(tabId) || 0;
     const newCount = currentCount + 1;
 

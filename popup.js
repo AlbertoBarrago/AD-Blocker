@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const actionContainer = document.getElementById('actions-container');
     const whitelistToggleBtn = document.getElementById('whitelist-toggle');
     const viewAdsBtn = document.getElementById('view-ads');
+    const footer = document.querySelector('footer');
+    const version = chrome.runtime.getManifest().version;
 
     /**
      * Initializes the popup state by checking plugin status and updating UI.
@@ -155,6 +157,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const _initFooter = () => {
+        footer.innerHTML = `
+               <small>Made with ☕️ by <a target="_blank" href="https://albertobarrago.github.io/">alBz</a> v${version}</small>
+        `;
+        document.body.appendChild(footer);
+    };
+
     initPopup();
+    _initFooter();
     _updateWhitelistButton();
 });
