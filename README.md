@@ -1,6 +1,7 @@
-# Albz Adv Blocker
+# Adv Blocker
 
-Albz Ad Blocker is a lightweight Chrome extension designed to enhance your browsing experience by blocking intrusive ads. Enjoy a cleaner, faster, and more secure web experience with just a click.
+ADV Blocker is a lightweight Chrome extension designed to enhance your browsing experience by blocking intrusive ads.
+Enjoy a cleaner, faster, and more secure web experience with just a click.
 
 ## Features
 
@@ -24,7 +25,7 @@ Albz Ad Blocker is a lightweight Chrome extension designed to enhance your brows
 
 ## Usage
 
-1. Click the Albz Ad Blocker icon in your Chrome toolbar
+1. Click the ADV Blocker icon in your Chrome toolbar
 2. Toggle the switch to enable/disable ad blocking
 3. Use the settings menu to customize blocking preferences
 4. Add sites to allowlist if needed
