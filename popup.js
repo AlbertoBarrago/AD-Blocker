@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const hostname = url.hostname;
                 chrome.storage.sync.get({whitelist: []}, (data) => {
                     const isWhitelisted = data.whitelist.includes(hostname);
-                    
+
                     // Update button appearance
                     if (isWhitelisted) {
                         whitelistToggleBtn.textContent = 'Remove from Whitelist';
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateCounters = (count) => {
         const statsCounter = document.getElementById('stats-counter');
         const totalCounter = document.getElementById('total-counter');
-        
+
         if (statsCounter) {
             statsCounter.textContent = count;
         }
@@ -157,15 +157,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Get the current count from the background script
     chrome.runtime.sendMessage({action: "getCurrentCount"}, (response) => {
-        updateCounters(response?.count || '0');
-    });
-
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.action === "updateCounter" || message.action === "resetCounter") {
-            updateCounters(message.count);
+        if (response && response.count !== undefined) {
+            updateCounters(response.count);
+        } else {
+            updateCounters(0);
         }
     });
+
+    // This listener isn't needed anymore since we're not getting real-time updates
+    // from the background script. We just get the count when the popup opens.
+    // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    //     if (message.action === "updateCounter" || message.action === "resetCounter") {
+    //         updateCounters(message.count);
+    //     }
+    // });
 
     initPopup();
     _updateWhitelistButton();
