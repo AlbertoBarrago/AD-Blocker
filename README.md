@@ -16,8 +16,10 @@ Enjoy a cleaner, faster, and more secure web experience with just a click.
 ## Installation
 
 1. **Manual Installation (Developer Mode):**
-   
-   git clone https://github.io/alBz/albz-ad-blocker
+
+   `git clone https://github.io/alBz/albz-ad-blocker`
+
+   Or Download from Actions the latest release
    
    - Open Chrome and go to `chrome://extensions/`
    - Enable "Developer mode" in the top right
