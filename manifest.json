@@ -3,7 +3,7 @@
   "name": "albz-adv-blocker",
   "version": "1.3.0",
   "description": "Albz Ad Blocker is a lightweight Chrome extension designed to enhance your browsing experience by blocking intrusive ads.",
-  "author": "Alberto Barrago (alBz)",
+  "author": "Alberto Barrago <abarrago@gmail.com>",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
