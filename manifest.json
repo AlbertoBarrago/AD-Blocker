@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "adv-blocker",
+  "name": "AD Blocker",
   "version": "1.3.0",
-  "description": "ADV Blocker is a lightweight Chrome extension designed to enhance your browsing experience by blocking intrusive ads.",
+  "description": "AD Blocker is a lightweight Chrome extension designed to enhance your browsing experience by blocking intrusive ads.",
   "author": "Alberto Barrago <abarrago@gmail.com>",
   "icons": {
     "16": "icons/icon16.png",
