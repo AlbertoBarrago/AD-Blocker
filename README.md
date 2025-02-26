@@ -17,7 +17,7 @@ Enjoy a cleaner, faster, and more secure web experience with just a click.
 
 1. **Manual Installation (Developer Mode):**
 
-   `git clone https://github.io/alBz/albz-ad-blocker`
+   `git clone https://github.io/alBz/AD-blocker`
 
    Or Download from Actions the latest release
    
