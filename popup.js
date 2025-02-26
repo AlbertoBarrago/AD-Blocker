@@ -1,3 +1,8 @@
+/**
+ * Initializes the popup functionality for the ad blocker extension.
+ * Handles plugin disable/enable, allowlist management, and blocked ads viewing.
+ * @listens DOMContentLoaded
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const disableSwitch = document.getElementById('disable-plugin');
     const statsContainer = document.getElementById('stats-container');
@@ -5,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const whitelistToggleBtn = document.getElementById('whitelist-toggle');
     const viewAdsBtn = document.getElementById('view-ads');
 
+    /**
+     * Initializes the popup state by checking plugin status and updating UI.
+     * @function
+     */
     const initPopup = () => {
         chrome.storage.sync.get({pluginDisabled: false}, (data) => {
             disableSwitch.checked = data.pluginDisabled;
@@ -16,6 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
         _updateWhitelistButton()
     }
 
+    /**
+     * Handles the plugin enable/disable switch state changes.
+     * @param {Event} event - The change event from the switch.
+     */
     disableSwitch.addEventListener('change', (event) => {
         const isDisabled = event.target.checked;
         chrome.storage.sync.set({pluginDisabled: isDisabled}, () => {
@@ -35,6 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    /**
+     * Handles the whitelist toggle button click events.
+     * Adds or removes the current site from the whitelist.
+     * @listens click
+     */
     whitelistToggleBtn.addEventListener('click', () => {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (!tabs.length) return;
@@ -67,17 +85,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    /**
+     * Handles the view blocked ads button click events.
+     * Displays a list of blocked ads for the current page.
+     * @listens click
+     */
     viewAdsBtn.addEventListener('click', () => {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (tabs.length === 0) return;
             const activeTab = tabs[0];
-
-            // Add debug logging
-            console.log('Requesting blocked ads for tab:', activeTab.id);
-
             chrome.tabs.sendMessage(activeTab.id, {action: "getBlockedAds"}, (response) => {
-                console.log('Received response:', response);
-
                 if (response && Array.isArray(response.blockedAds)) {
                     if (response.blockedAds.length > 0) {
                         alert("Blocked Ads:\n" + response.blockedAds.join('\n'));
@@ -91,6 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    /**
+     * Displays a message in the popup UI.
+     * @param {string} message - The message to display.
+     * @private
+     */
     const _showMessage = (message) => {
         const existingMsg = document.querySelector('.no-ads-message');
         if (existingMsg) {
@@ -107,6 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Updates the whitelist button state based on current site status.
+     * @private
+     */
     const _updateWhitelistButton = () => {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (!tabs.length) return;
@@ -115,8 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const hostname = url.hostname;
                 chrome.storage.sync.get({whitelist: []}, (data) => {
                     const isWhitelisted = data.whitelist.includes(hostname);
-
-                    // Update button appearance
                     if (isWhitelisted) {
                         whitelistToggleBtn.textContent = 'Remove from Whitelist';
                         whitelistToggleBtn.classList.add('red-button');

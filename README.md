@@ -27,7 +27,7 @@ Albz Ad Blocker is a lightweight Chrome extension designed to enhance your brows
 1. Click the Albz Ad Blocker icon in your Chrome toolbar
 2. Toggle the switch to enable/disable ad blocking
 3. Use the settings menu to customize blocking preferences
-4. Add sites to whitelist if needed
+4. Add sites to allowlist if needed
 
 
 ## License

@@ -1,12 +1,10 @@
 chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
     if (result.pluginDisabled) {
-        // Disable ad blocking functionality if disabled
         return;
     }
 
     const currentHostname = window.location.hostname;
     if (result.whitelist && result.whitelist.includes(currentHostname)) {
-        // Skip ad blocking for white_listed site
         return;
     }
 
@@ -58,8 +56,9 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
         const blockedAds = new Set();
 
         /**
-         * Updates the extension badge with the count of blocked ads
-         * @param {number} count - The number of blocked ads to display on the badge
+         * Updates the extension badge with the current count of blocked advertisements
+         * @param {number} count - The total number of blocked advertisements
+         * @returns {void}
          */
         const updateBadgeCount = (count) => {
             if (chrome?.runtime?.sendMessage) {
@@ -72,7 +71,9 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
         }
 
         /**
-         * Removes advertisement elements from the page and tracks them
+         * Identifies and removes advertisement elements from the DOM
+         * Tracks unique advertisements and updates the badge count
+         * @returns {void}
          */
         const removeAds = () => {
             const adSelectors = `
@@ -97,12 +98,10 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
             .adv-box,
         
             iframe[src*="doubleclick.net"],
-            /* Use caution: "iframe[src*="ad."]" is broad; test thoroughly */
             iframe[src*="ad."],
         
             [data-ad-client]
         `;
-
 
             const adElements = document.querySelectorAll(adSelectors);
 
@@ -119,8 +118,9 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
         }
 
         /**
-         * Initializes the mutation observer to watch for new ad elements.
-         * If document.body isn't ready, sets up an observer to wait for it.
+         * Initializes the MutationObserver to monitor DOM changes for new advertisements
+         * Ensures the document.body is available before starting observation
+         * @returns {void}
          */
         const initObserver = () => {
             if (!document.body) {
@@ -142,7 +142,6 @@ chrome.storage.sync.get({pluginDisabled: false, whitelist: []}, (result) => {
 
         document.addEventListener("DOMContentLoaded", initObserver);
         initObserver();
-
 
         chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             if (request.action === "getBlockedAds") {
